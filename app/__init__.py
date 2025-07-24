@@ -15,22 +15,29 @@ load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app(config_class=Config):
+def create_app(test_config=None):
     """
     Creates and configures an instance of the Flask application.
     This is the Application Factory pattern.
     """
     app = Flask(__name__)
-    
-    # Load default configuration from the config object
-    app.config.from_object(config_class)
-    
-    # IMPORTANT: Override with sensitive values from environment variables
-    app.config.update(
-        SECRET_KEY=os.environ.get('SECRET_KEY'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
-        SQLALCHEMY_TRACK_MODIFICATIONS=False
-    )
+
+    if test_config is None:
+        # --- Normal App Execution ---
+        # Load the default configuration from the config object
+        app.config.from_object(Config)
+
+        # IMPORTANT: Override with sensitive values from environment variables
+        app.config.update(
+            SECRET_KEY=os.environ.get('SECRET_KEY'),
+            SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
+            SQLALCHEMY_TRACK_MODIFICATIONS=False
+        )
+    else:
+        # --- Test Execution ---
+        # Load the test configuration if it's passed in
+        app.config.from_mapping(test_config)
+
 
     # Initialize extensions with the app
     db.init_app(app)
@@ -42,21 +49,22 @@ def create_app(config_class=Config):
     from .api.workout_routes import workout_bp
     from .api.progress_routes import progress_bp
     from .api.reward_routes import reward_bp
-    
+
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(diet_bp, url_prefix='/api/diet')
     app.register_blueprint(workout_bp, url_prefix='/api/workout')
     app.register_blueprint(progress_bp, url_prefix='/api/progress')
     app.register_blueprint(reward_bp, url_prefix='/api/reward')
-    
+
     # --- Set up and start the background scheduler ---
-    from .services.adaptive_planner_service import run_weekly_adaptive_planning
-    
-    scheduler = BackgroundScheduler(daemon=True)
-    # Schedule the job to run every Sunday at 2 AM
-    # To this for testing:
-    scheduler.add_job(run_weekly_adaptive_planning, 'cron', day_of_week='sun', hour=2)
-    scheduler.start()
+    # Avoid running the scheduler during tests
+    if not app.config.get("TESTING"):
+        from .services.adaptive_planner_service import run_weekly_adaptive_planning
+
+        scheduler = BackgroundScheduler(daemon=True)
+        # Schedule the job to run every Sunday at 2 AM
+        scheduler.add_job(run_weekly_adaptive_planning, 'cron', day_of_week='sun', hour=2)
+        scheduler.start()
     # ---------------------------------------------
 
     return app
