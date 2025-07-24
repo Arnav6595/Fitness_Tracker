@@ -1,0 +1,15 @@
+# Virtual Environment
+venv/
+
+# Python cache files
+__pycache__/
+.pytest_cache/
+
+# Environment variables - contains secrets!
+.env
+
+# IDE-specific files
+.vscode/
+
+# User-specific text files (optional, but good practice)
+*.txt
