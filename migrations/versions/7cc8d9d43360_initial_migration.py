@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: e5e21cd97a66
+Revision ID: 7cc8d9d43360
 Revises: 
-Create Date: 2025-07-24 13:30:00.000000
+Create Date: 2025-07-24 21:29:19.829953
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e5e21cd97a66'
+revision = '7cc8d9d43360'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -33,10 +33,10 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=80), nullable=False),
+    sa.Column('contact_info', sa.String(length=120), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('age', sa.Integer(), nullable=True),
     sa.Column('gender', sa.String(length=20), nullable=True),
-    sa.Column('contact_info', sa.String(length=120), nullable=True),
     sa.Column('weight_kg', sa.Float(), nullable=True),
     sa.Column('height_cm', sa.Float(), nullable=True),
     sa.Column('fitness_goals', sa.Text(), nullable=True),
@@ -50,7 +50,7 @@ def upgrade():
     sa.Column('activity_level', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['clients.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('contact_info'),
+    sa.UniqueConstraint('contact_info', 'client_id', name='_contact_info_client_uc'),
     sa.UniqueConstraint('username', 'client_id', name='_username_client_uc')
     )
     op.create_table('achievement',
