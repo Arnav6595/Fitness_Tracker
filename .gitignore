@@ -1,15 +1,33 @@
-# Virtual Environment
-venv/
-
-# Python cache files
+# Python
 __pycache__/
+*.py[cod]
+*.so
 .pytest_cache/
+*.sqlite3
 
-# Environment variables - contains secrets!
+# Virtual environment
+venv/
+.venv/
+
+# Env variables / secrets
 .env
 
-# IDE-specific files
+# IDE/editor configs
 .vscode/
+.idea/
 
-# User-specific text files (optional, but good practice)
+# Logs and temp
+*.log
+*.tmp
+
+# Coverage reports
+.coverage
+htmlcov/
+.cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# User files
 *.txt
