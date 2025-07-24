@@ -4,6 +4,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_swagger_ui import get_swaggerui_blueprint
 from config import Config
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -14,6 +15,21 @@ load_dotenv()
 # Initialize extensions without attaching them to an app yet
 db = SQLAlchemy()
 migrate = Migrate()
+
+# --- Swagger UI Configuration ---
+# This sets up the endpoint for your interactive API documentation.
+SWAGGER_URL = '/api/docs'  # The URL for the documentation page
+API_URL = '/static/swagger.yaml'  # The path to your documentation content file
+
+# Create the Swagger UI blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Fitness Tracker API"
+    }
+)
+# ---------------------------------
 
 def create_app(test_config=None):
     """
@@ -55,6 +71,9 @@ def create_app(test_config=None):
     app.register_blueprint(workout_bp, url_prefix='/api/workout')
     app.register_blueprint(progress_bp, url_prefix='/api/progress')
     app.register_blueprint(reward_bp, url_prefix='/api/reward')
+
+    # Register the Swagger UI blueprint with the app
+    app.register_blueprint(swaggerui_blueprint)
 
     # --- Set up and start the background scheduler ---
     # Avoid running the scheduler during tests
