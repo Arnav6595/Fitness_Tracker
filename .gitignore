@@ -31,3 +31,4 @@ Thumbs.db
 
 # User files
 *.txt
+!requirements.txt
