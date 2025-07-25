@@ -10,6 +10,13 @@ class Config:
 
     # Get the database URL from the environment
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+    "connect_args": {
+        "options": "-c search_path=neondb"  # or "public"
+    }
+}
+
     
     # Suppress a warning
     SQLALCHEMY_TRACK_MODIFICATIONS = False

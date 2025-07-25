@@ -44,11 +44,9 @@ def create_app(test_config=None):
         app.config.from_object(Config)
 
         # IMPORTANT: Override with sensitive values from environment variables
-        app.config.update(
-            SECRET_KEY=os.environ.get('SECRET_KEY'),
-            SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
-            SQLALCHEMY_TRACK_MODIFICATIONS=False
-        )
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
     else:
         # --- Test Execution ---
         # Load the test configuration if it's passed in
@@ -85,5 +83,6 @@ def create_app(test_config=None):
         scheduler.add_job(run_weekly_adaptive_planning, 'cron', day_of_week='sun', hour=2)
         scheduler.start()
     # ---------------------------------------------
-
+   
+    from app import models
     return app
